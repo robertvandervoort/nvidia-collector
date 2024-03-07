@@ -20,6 +20,7 @@
 
 ## Requirements:
 nvidia-smi (provided by NVIDIA Drivers)
+python3
 
 ## Installation:
 ```
