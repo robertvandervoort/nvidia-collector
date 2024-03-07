@@ -19,8 +19,8 @@
 - Per-Process Memory Usage
 
 ## Requirements:
-nvidia-smi (provided by NVIDIA Drivers)
-python3
+- nvidia-smi (provided by NVIDIA Drivers)
+- python3
 
 ## Installation:
 ```
