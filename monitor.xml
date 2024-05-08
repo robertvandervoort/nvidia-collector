@@ -15,6 +15,7 @@
         <executable-task>
             <type>file</type>
             <file os-type="linux">gather-nvdata.py</file>
+            <file os-type="windows">gather-nvdata-win.py</file>
         </executable-task>
     </monitor-run-task>
 </monitor>
