@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+#import pprint #uncomment for debugging
 import subprocess
 import xml.etree.ElementTree as ET
 
@@ -48,9 +49,11 @@ if nvidia_info:
     process_info_list = nvidia_info['gpu']['processes']['process_info']
     product_name = nvidia_info['gpu']['product_name']
     # define metrics to capture
+    #pprint.pprint(nvidia_info) #raw output for debugging
     metrics = {
         'gpu_temp': nvidia_info['gpu']['temperature']['gpu_temp'],
         'power_draw': nvidia_info['gpu']['gpu_power_readings']['power_draw'],
+        'power_limit': nvidia_info['gpu']['gpu_power_readings']['current_power_limit'],
         'mem_total': nvidia_info['gpu']['fb_memory_usage']['total'],
         'mem_free': nvidia_info['gpu']['fb_memory_usage']['free'],
         'mem_used': nvidia_info['gpu']['fb_memory_usage']['used'],
@@ -64,26 +67,34 @@ if nvidia_info:
         'max_sm_clock': nvidia_info['gpu']['max_clocks']['sm_clock'],
         'max_mem_clock': nvidia_info['gpu']['max_clocks']['mem_clock'],
         'max_video_clock': nvidia_info['gpu']['max_clocks']['video_clock'],
+        'PCI_Rx_Util': nvidia_info['gpu']['pci']['rx_util'],
+        'PCI_Tx_Util': nvidia_info['gpu']['pci']['tx_util'],
+        'PCI_replay_counter': nvidia_info['gpu']['pci']['replay_counter']
     }
 
     output_structure = f'name=Custom Metrics|nvidia-smi|{product_name}|'
     # output non-process metrics
     for metric_name, metric_value in metrics.items():
         metric_value = only_digits(metric_value)
-        if metric_value == None:
+        if metric_value is None or metric_name is None:
             continue
         print(output_structure + f"{metric_name.replace('_', ' ').title()}, value={metric_value}")
+
     # iterate through processes
-    #for i, process_info in enumerate(process_info_list, start=1):
-    #    process_name = truncate_after_space(process_info['process_name'])
-    #    used_memory = process_info['used_memory']
-    #    used_memory = only_digits(used_memory)
-    #    print(output_structure + f"Processes|{process_name}|Used Memory, value={used_memory}")
     if isinstance(process_info_list, list):
         for i, process_info in enumerate(process_info_list, start=1):
             #process_name = truncate_after_space(process_info['process_name'])
+            #drop processes with no name
+            if process_info['process_name'] is None:
+                continue
             process_name = process_info['process_name']
-            used_memory = process_info['used_memory']
+            
+            #drop processes with no value - could be due to WDDM handling memory
+            #print(f"Process info used memory= {process_info['used_memory']}")
+            if process_info['used_memory'] == "N/A":
+                continue
+            else:
+                used_memory = process_info['used_memory']
             used_memory = only_digits(used_memory)
             print(output_structure + f"Processes|{process_name}|Used Memory, value={used_memory}")
     else:
@@ -92,3 +103,4 @@ if nvidia_info:
         used_memory = process_info['used_memory']
         used_memory = only_digits(used_memory)
         print(output_structure + f"Processes|{process_name}|Used Memory, value={used_memory}")
+    

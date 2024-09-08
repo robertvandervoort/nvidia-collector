@@ -47,6 +47,7 @@ if nvidia_info:
     metrics = {
         'gpu_temp': nvidia_info['gpu']['temperature']['gpu_temp'],
         'power_draw': nvidia_info['gpu']['gpu_power_readings']['power_draw'],
+        'power_limit': nvidia_info['gpu']['gpu_power_readings']['current_power_limit'],
         'mem_total': nvidia_info['gpu']['fb_memory_usage']['total'],
         'mem_free': nvidia_info['gpu']['fb_memory_usage']['free'],
         'mem_used': nvidia_info['gpu']['fb_memory_usage']['used'],
@@ -60,6 +61,9 @@ if nvidia_info:
         'max_sm_clock': nvidia_info['gpu']['max_clocks']['sm_clock'],
         'max_mem_clock': nvidia_info['gpu']['max_clocks']['mem_clock'],
         'max_video_clock': nvidia_info['gpu']['max_clocks']['video_clock'],
+        'PCI_Rx_Util': nvidia_info['gpu']['pci']['rx_util'],
+        'PCI_Tx_Util': nvidia_info['gpu']['pci']['tx_util'],
+        'PCI_replay_counter': nvidia_info['gpu']['pci']['replay_counter']
     }
 
     output_structure = f'name=Custom Metrics|nvidia-smi|{product_name}|'
